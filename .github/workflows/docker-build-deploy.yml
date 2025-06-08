@@ -8,7 +8,14 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+
+    permissions:
+         contents: read   # Needed for actions/checkout@v4
+         packages: write  # Crucial for pushing to GitHub Container Registry
+
     steps:
+      
+
       - name: Checkout code
         uses: actions/checkout@v4 # Use a stable version for checkout
 
