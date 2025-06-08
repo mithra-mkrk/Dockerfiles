@@ -1,0 +1,83 @@
+When you rename a repository on platforms like GitHub, GitLab, or Bitbucket, the URL for that remote repository changes. Your local Git repository still has the old URL configured. To push your local commits to the newly renamed remote repository, you need to update the remote URL in your local Git configuration.
+
+Here's how to do it, step-by-step:
+
+### 1. Get the New URL of Your Renamed Repository
+
+First, you need the new URL of your repository from your Git hosting platform (e.g., GitHub).
+
+* **On GitHub:**
+    1.  Go to your renamed repository on GitHub.
+    2.  Click the "< > Code" button (usually green).
+    3.  Copy the HTTPS or SSH URL. It will include the new repository name.
+        (e.g., `https://github.com/your-username/new-repo-name.git` or `git@github.com:your-username/new-repo-name.git`)
+
+### 2. Update Your Local Remote URL
+
+Now, in your local Git repository, you need to tell Git about the new URL.
+
+1.  **Open your terminal or Git Bash** and navigate to your local repository directory.
+    ```bash
+    cd /path/to/your/local/repo
+    ```
+
+2.  **Check your current remote(s) (optional but good practice):**
+    This command will show you the existing remote names (usually `origin`) and their current URLs.
+    ```bash
+    git remote -v
+    ```
+    You'll likely see something like:
+    ```
+    origin  https://github.com/your-username/old-repo-name.git (fetch)
+    origin  https://github.com/your-username/old-repo-name.git (push)
+    ```
+
+3.  **Update the remote URL:**
+    The most common remote name is `origin`. Use the `git remote set-url` command:
+    ```bash
+    git remote set-url origin <NEW_REPOSITORY_URL>
+    ```
+    **Replace `<NEW_REPOSITORY_URL>` with the URL you copied in Step 1.**
+
+    **Example (for HTTPS):**
+    ```bash
+    git remote set-url origin https://github.com/your-username/my-renamed-repo.git
+    ```
+    **Example (for SSH):**
+    ```bash
+    git remote set-url origin git@github.com:your-username/my-renamed-repo.git
+    ```
+
+4.  **Verify the change:**
+    Run `git remote -v` again to confirm that the URL has been updated.
+    ```bash
+    git remote -v
+    ```
+    It should now show the new URL:
+    ```
+    origin  https://github.com/your-username/my-renamed-repo.git (fetch)
+    origin  https://github.com/your-username/my-renamed-repo.git (push)
+    ```
+
+### 3. Push Your Commits to the Renamed Repository
+
+Now that your local repository knows the correct remote URL, you can push your local commits as usual.
+
+```bash
+git push origin main
+```
+(Or whatever branch you are on, e.g., `git push origin your-feature-branch`).
+
+### Summary of Commands:
+
+1.  **Go to your GitHub repo and copy the new URL.**
+2.  In your local terminal:
+    ```bash
+    cd /path/to/your/local/repo
+    git remote -v                                  # Optional: See old URL
+    git remote set-url origin <NEW_REPOSITORY_URL> # Update the URL
+    git remote -v                                  # Verify new URL
+    git push origin main                           # Push your changes
+    ```
+
+You're all set! Your local repository is now pointing to the correct, renamed remote repository.

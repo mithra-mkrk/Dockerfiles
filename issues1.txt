@@ -1,0 +1,120 @@
+No worries, this is a very common scenario in Git! There are a few ways to undo a local commit, and the best method depends on whether you want to **keep the changes** from that commit or **discard them entirely**.
+
+Here's a breakdown of the most common and safest methods:
+
+### Scenario 1: You want to undo the commit, but **keep the changes** in your working directory (as unstaged or staged files).
+
+This is often the case if you committed too early, made a mistake in the commit message, or forgot to include some files.
+
+The command for this is `git reset --soft HEAD~1`.
+
+**Steps:**
+
+1.  **Open your terminal** and navigate to your Git repository.
+2.  **Run:**
+    ```bash
+    git reset --soft HEAD~1
+    ```
+    * `HEAD~1` refers to the commit *before* your last commit.
+    * `--soft` tells Git to move the `HEAD` pointer back to the previous commit, but leave all the changes from the undone commit in your **staging area (index)**.
+
+3.  **Check your status:**
+    ```bash
+    git status
+    ```
+    You should see the files that were part of your last commit now listed as "Changes to be committed" (staged). You can then:
+    * Edit the files further.
+    * Unstage some files (`git restore --staged <filename>`).
+    * Add new files.
+    * Then, commit again with a new, corrected commit message and content:
+        ```bash
+        git commit -m "Your new, correct commit message"
+        ```
+
+**Advantages:** You don't lose any work, and you can easily refine your changes before committing again.
+
+### Scenario 2: You want to undo the commit and **unstage the changes** (put them back in your working directory).
+
+Similar to `--soft`, but the changes will be unstaged.
+
+The command for this is `git reset HEAD~1` (or `git reset --mixed HEAD~1` as `--mixed` is the default).
+
+**Steps:**
+
+1.  **Open your terminal** and navigate to your Git repository.
+2.  **Run:**
+    ```bash
+    git reset HEAD~1
+    ```
+    * `HEAD~1` refers to the commit *before* your last commit.
+    * `--mixed` (the default) tells Git to move the `HEAD` pointer back, and also to move the changes from the undone commit out of the staging area, so they are now in your **working directory (as unstaged changes)**.
+
+3.  **Check your status:**
+    ```bash
+    git status
+    ```
+    You should see the files that were part of your last commit now listed as "Changes not staged for commit" (unstaged). You can then:
+    * Edit the files further.
+    * Stage the files you want to commit (`git add <filename>`).
+    * Then, commit again.
+
+**Advantages:** Gives you more control over what you want to stage for your next commit.
+
+### Scenario 3: You want to undo the commit and **discard ALL changes** associated with it.
+
+**Use this with extreme caution!** This will permanently delete the changes from your local files.
+
+The command for this is `git reset --hard HEAD~1`.
+
+**Steps:**
+
+1.  **Open your terminal** and navigate to your Git repository.
+2.  **Run:**
+    ```bash
+    git reset --hard HEAD~1
+    ```
+    * `HEAD~1` refers to the commit *before* your last commit.
+    * `--hard` tells Git to move the `HEAD` pointer back and **discard all changes** in your working directory and staging area that were part of the undone commit.
+
+3.  **Check your status:**
+    ```bash
+    git status
+    ```
+    Your working directory should now be clean, as if that last commit (and its changes) never happened.
+
+**Disadvantages:** This is destructive. If you need those changes, you'll lose them. Only use if you are absolutely sure you don't need the changes.
+
+### What if you want to undo an older commit that's not the last one, and it's already on a remote (pushed)?
+
+If the commit you want to undo is not the very last one, or if you have **already pushed** your changes to a remote repository (like GitHub), then `git reset` can be problematic because it rewrites history. Rewriting history on a shared branch can cause issues for collaborators.
+
+In such cases, the safer option is `git revert`.
+
+* **`git revert <commit-hash>`**: This command creates a *new commit* that undoes the changes introduced by the specified commit. It doesn't rewrite history, but rather adds a new commit that is the "opposite" of the bad one. This is generally preferred for shared branches.
+
+**Example for `git revert` (if you already pushed):**
+
+1.  Find the hash of the commit you want to undo. You can get this by running `git log --oneline`.
+    ```bash
+    git log --oneline
+    ```
+    (e.g., you see `abcdefg My mistaken commit`)
+
+2.  Run `git revert`:
+    ```bash
+    git revert abcdefg # Replace 'abcdefg' with the actual commit hash
+    ```
+    This will open your default text editor (like Vim or Nano) to allow you to edit the revert commit message. Save and close the editor.
+
+3.  Now you have a new commit that undoes the changes of the mistaken one. You can then `git push` this new commit.
+
+### Safety Net: `git reflog`
+
+If you ever accidentally mess up your local history with `git reset --hard` or similar commands and think you've lost commits, `git reflog` is your friend. It shows a log of where your `HEAD` has been. You can use it to find the hash of a "lost" commit and then reset back to it.
+
+```bash
+git reflog
+```
+This will show you a history of your HEAD movements. You can then use `git reset --hard <commit-hash-from-reflog>` to go back to a previous state.
+
+Choose the method that best fits your specific situation. For a recent, local-only mistake, `git reset --soft HEAD~1` or `git reset HEAD~1` are usually the safest and most flexible options.
